@@ -7,17 +7,14 @@
 // Définition de l'événement
 wxDEFINE_EVENT(EVT_DPTHEME_CHANGED, wxCommandEvent);
 
-// Fonction externe pour envoyer des messages (doit être définie par le plugin)
-extern void SendPluginMessage(const wxString& message_id, const wxString& message_body);
-extern wxFileConfig* GetOCPNConfigObject();
-
 DpThemeClient& DpThemeClient::Instance() {
     static DpThemeClient instance;
     return instance;
 }
 
-void DpThemeClient::Init(const wxString& pluginName) {
+void DpThemeClient::Init(const wxString& pluginName, const DpThemeClientCallbacks& callbacks) {
     m_pluginName = pluginName;
+    m_callbacks = callbacks;
     m_initialized = true;
     
     // Charger depuis la config locale
@@ -28,7 +25,7 @@ void DpThemeClient::Init(const wxString& pluginName) {
 }
 
 void DpThemeClient::RequestCurrentTheme() {
-    if (!m_initialized) return;
+    if (!m_initialized || !m_callbacks.sendMessage) return;
     
     // Construire la requête JSON
     wxJSONValue request;
@@ -39,7 +36,7 @@ void DpThemeClient::RequestCurrentTheme() {
     wxString jsonStr;
     writer.Write(request, jsonStr);
     
-    SendPluginMessage("DPTHEME_REQUEST", jsonStr);
+    m_callbacks.sendMessage("DPTHEME_REQUEST", jsonStr);
 }
 
 wxColour DpThemeClient::GetColor(DpColorRole role) const {
@@ -97,7 +94,7 @@ void DpThemeClient::ApplyTheme(const wxString& themeName, DpThemeMode mode) {
 
 void DpThemeClient::NotifyThemeChange() {
     // Appeler tous les callbacks enregistrés
-    for (auto& callback : m_callbacks) {
+    for (auto& callback : m_changeCallbacks) {
         if (callback) {
             callback();
         }
@@ -109,7 +106,7 @@ void DpThemeClient::NotifyThemeChange() {
 }
 
 void DpThemeClient::RegisterCallback(ThemeChangeCallback callback) {
-    m_callbacks.push_back(callback);
+    m_changeCallbacks.push_back(callback);
 }
 
 void DpThemeClient::ForceRefresh() {
@@ -117,7 +114,9 @@ void DpThemeClient::ForceRefresh() {
 }
 
 void DpThemeClient::LoadFromConfig() {
-    wxFileConfig* config = GetOCPNConfigObject();
+    if (!m_callbacks.getConfig) return;
+    
+    wxFileConfig* config = m_callbacks.getConfig();
     if (!config) return;
     
     wxString oldPath = config->GetPath();
@@ -136,7 +135,9 @@ void DpThemeClient::LoadFromConfig() {
 }
 
 void DpThemeClient::SaveToConfig() {
-    wxFileConfig* config = GetOCPNConfigObject();
+    if (!m_callbacks.getConfig) return;
+    
+    wxFileConfig* config = m_callbacks.getConfig();
     if (!config) return;
     
     wxString oldPath = config->GetPath();

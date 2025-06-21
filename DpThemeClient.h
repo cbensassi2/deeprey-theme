@@ -5,14 +5,22 @@
 #include <wx/event.h>
 #include <functional>
 
+// Forward declaration
+class wxFileConfig;
+
 // Événement personnalisé pour le changement de thème
 wxDECLARE_EVENT(EVT_DPTHEME_CHANGED, wxCommandEvent);
 
 /**
+ * @brief Interface pour les fonctions OpenCPN
+ */
+struct DpThemeClientCallbacks {
+    std::function<void(const wxString&, const wxString&)> sendMessage;
+    std::function<wxFileConfig*()> getConfig;
+};
+
+/**
  * @brief Classe de base pour les clients de thème
- * 
- * Cette classe peut être utilisée par n'importe quel plugin pour
- * recevoir et appliquer les thèmes de manière synchronisée
  */
 class DpThemeClient : public wxEvtHandler {
 public:
@@ -21,8 +29,8 @@ public:
     
     static DpThemeClient& Instance();
     
-    // Initialisation (à appeler dans Init() du plugin)
-    void Init(const wxString& pluginName);
+    // Initialisation avec les callbacks OpenCPN
+    void Init(const wxString& pluginName, const DpThemeClientCallbacks& callbacks);
     
     // Demande le thème actuel au plugin principal
     void RequestCurrentTheme();
@@ -41,7 +49,7 @@ public:
     // Enregistrer un callback pour les changements
     void RegisterCallback(ThemeChangeCallback callback);
     
-    // Forcer un refresh (utile pour les widgets)
+    // Forcer un refresh
     void ForceRefresh();
     
 protected:
@@ -50,15 +58,18 @@ protected:
     
 private:
     wxString m_pluginName;
-    wxString m_currentTheme = "Ocean";  // Défaut
+    wxString m_currentTheme = "Ocean";
     DpThemeMode m_mode = DpThemeMode::Day;
     bool m_initialized = false;
+    
+    // Callbacks vers OpenCPN
+    DpThemeClientCallbacks m_callbacks;
     
     // Cache local des couleurs actuelles
     DpThemeProfile m_cachedProfile;
     
-    // Callbacks enregistrés
-    std::vector<ThemeChangeCallback> m_callbacks;
+    // Callbacks enregistrés pour les changements
+    std::vector<ThemeChangeCallback> m_changeCallbacks;
     
     void ApplyTheme(const wxString& themeName, DpThemeMode mode);
     void NotifyThemeChange();
