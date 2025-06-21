@@ -13,37 +13,7 @@
 // Interface partagée entre les plugins
 // ============================================================================
 
-// Ces enums doivent être identiques dans tous les plugins
-enum class DpColorRole {
-    // Texte
-    TextPrimary,
-    TextPrimary_Selected,
-    TextSecondary,
-    TextDisabled,
-    
-    // Fonds
-    Background_1,
-    Background_2,
-    Background_3,
-    Background_4,
-    Background_rail,
-    
-    // Border
-    Border_1,
-    Border_2,
-    Border_3,
-    Border_4,
-    
-    // Éléments actifs
-    HighlightPrimary,
-    HighlightSecondary,
-    HighlightDisabled
-};
-
-enum class DpThemeMode { 
-    Day, 
-    Night 
-};
+#include "DpThemeTypes.h"  // Inclure les types partagés
 
 // Interface minimale pour accéder aux thèmes
 class IDpThemeProvider {
