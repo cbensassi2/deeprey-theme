@@ -46,24 +46,23 @@ wxColour DpThemeClient::GetColor(DpColorRole role) const {
 }
 
 void DpThemeClient::HandleThemeMessage(const wxString& message_body) {
-    wxLogMessage("DpThemeClient: Handling message: %s", message_body);
     
     wxJSONReader reader;
     wxJSONValue root;
     
     if (reader.Parse(message_body, &root) != 0) {
-        wxLogMessage("DpThemeClient: ERROR parsing JSON");
+        
         return;
     }
     
     wxString type = root["type"].AsString();
-    wxLogMessage("DpThemeClient: Message type: %s", type);
+  
     
     if (type == "theme_current" || type == "theme_changed") {
         wxString themeName = root["theme"].AsString();
         wxString modeStr = root["mode"].AsString();
         
-        wxLogMessage("DpThemeClient: Theme=%s, Mode=%s", themeName, modeStr);
+       
         
         DpThemeMode mode = (modeStr == "night") 
             ? DpThemeMode::Night 
@@ -99,8 +98,7 @@ void DpThemeClient::ApplyTheme(const wxString& themeName, DpThemeMode mode) {
 }
 
 void DpThemeClient::NotifyThemeChange() {
-     wxLogMessage("DpThemeClient: NotifyThemeChange called, %d callbacks registered", 
-                 m_changeCallbacks.size());
+  
     
     // Appeler tous les callbacks enregistrés
     for (auto& callback : m_changeCallbacks) {
