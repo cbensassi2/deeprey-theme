@@ -157,8 +157,15 @@ public:
     }
     
     // Ajouter un callback pour les changements de thème
-    void AddThemeChangeCallback(std::function<void()> callback) {
-        m_callbacks.push_back(callback);
+    uint64_t AddThemeChangeCallback(std::function<void()> callback) {
+        uint64_t id = m_nextCallbackId++;
+        m_callbacks[id] = callback;
+        return id;
+    }
+    
+    // Retirer un callback
+    void RemoveThemeChangeCallback(uint64_t callbackId) {
+        m_callbacks.erase(callbackId);
     }
     
 private:
@@ -200,14 +207,15 @@ private:
     }
     
     void NotifyCallbacks() {
-        for (const auto& callback : m_callbacks) {
+        for (const auto& [id, callback] : m_callbacks) {
             if (callback) callback();
         }
     }
     
     IDpThemeProvider* m_themeAPI;
     std::unordered_map<DpColorRole, wxColour> m_defaultColors;
-    std::vector<std::function<void()>> m_callbacks;
+    std::unordered_map<uint64_t, std::function<void()>> m_callbacks;
+    uint64_t m_nextCallbackId = 1;
 };
 
 // Instance globale pour faciliter l'accès
