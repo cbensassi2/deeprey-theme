@@ -292,7 +292,7 @@ std::map<DpIcon, wxString> DpIconManager::GetNameMap() {
         {DpIcon::BrightnessLow,     "Brightness Low"},
         {DpIcon::BrightnessHigh,    "Brightness High"},
 		{DpIcon::RectangleWide,     "Rectangle Wide"},
-		{DpIcon::square,    		"Square"},
+		{DpIcon::Square,    		"Square"},
 		
     };
     return nameMap;
