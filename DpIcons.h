@@ -84,6 +84,7 @@ enum class DpIcon {
     HouseDay,          // house-day (contrôle système 2)
     BrightnessLow,     // brightness-low (luminosité faible)
     BrightnessHigh,    // brightness (luminosité haute)
+	RectangleWide,     // rectangle-wide
 };
 
 /**

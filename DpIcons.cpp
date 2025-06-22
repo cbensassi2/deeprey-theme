@@ -230,6 +230,7 @@ std::map<DpIcon, wxString> DpIconManager::GetIconMap() {
         {DpIcon::HouseDay,          wxString::FromUTF8(u8"\ue00e")},  // house-day
         {DpIcon::BrightnessLow,     wxString::FromUTF8(u8"\ue0ca")},  // brightness-low
         {DpIcon::BrightnessHigh,    wxString::FromUTF8(u8"\ue0c9")},  // brightness
+		{DpIcon::RectangleWide,     wxString::FromUTF8(u8"\uf2fc")},  // rectangle-wide
     };
     return iconMap;
 }
@@ -289,6 +290,8 @@ std::map<DpIcon, wxString> DpIconManager::GetNameMap() {
         {DpIcon::HouseDay,          "House Day"},
         {DpIcon::BrightnessLow,     "Brightness Low"},
         {DpIcon::BrightnessHigh,    "Brightness High"},
+		{DpIcon::RectangleWide,     "Rectangle Wide"},
+		
     };
     return nameMap;
 }
