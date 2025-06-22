@@ -10,6 +10,14 @@
 class wxWindow;
 
 /**
+ * @brief Type de fonte Font Awesome
+ */
+enum class DpFontAwesomeType {
+    Free,   // Font Awesome 6 Free Solid
+    Pro     // Font Awesome 6 Pro Solid
+};
+
+/**
  * @brief Énumération des icônes disponibles
  */
 enum class DpIcon {
@@ -83,6 +91,10 @@ public:
     // Charge la fonte Font Awesome (si pas déjà fait)
     bool LoadIconFont();
     
+    // Nouvelle méthode pour définir le type de fonte à utiliser
+    void SetFontType(DpFontAwesomeType type);
+    DpFontAwesomeType GetFontType() const { return m_currentFontType; }
+    
     // API publique
     wxString GetIconGlyph(DpIcon icon) const;
     wxString GetIconName(DpIcon icon) const;
@@ -90,6 +102,9 @@ public:
     
     // Vérifie si la fonte est chargée
     bool IsIconFontLoaded() const { return m_fontLoaded; }
+    
+    // Nouvelle méthode pour vérifier si Font Awesome Pro est disponible
+    bool IsProFontAvailable() const { return m_proFontLoaded; }
     
 private:
     DpIconManager() = default;
@@ -102,12 +117,17 @@ private:
     // Membres privés
     bool m_initialized = false;
     bool m_fontLoaded = false;
+    bool m_proFontLoaded = false;
+    DpFontAwesomeType m_currentFontType = DpFontAwesomeType::Free;
     DpIconCallbacks m_callbacks;
     
     static const wxString kFaFamilyName;
+    static const wxString kFaProFamilyName;
     
-    // Helper interne
+    // Helper internes
     wxFont CreateScaledIconFont(int pointSize, wxWindow* parent) const;
+    bool LoadProFont();
+    bool LoadFreeFont();
     
     // Map des icônes
     static std::map<DpIcon, wxString> GetIconMap();

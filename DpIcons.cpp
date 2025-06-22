@@ -5,8 +5,9 @@
 #include <wx/filefn.h>
 #include <wx/filename.h>
 
-// Définition du nom de la famille Font Awesome
+// Définition des noms de famille Font Awesome
 const wxString DpIconManager::kFaFamilyName = "Font Awesome 6 Free Solid";
+const wxString DpIconManager::kFaProFamilyName = "Font Awesome 6 Pro Solid";
 
 // Singleton
 DpIconManager& DpIconManager::Instance() {
@@ -20,12 +21,8 @@ void DpIconManager::Init(const DpIconCallbacks& callbacks) {
     m_initialized = true;
 }
 
-// Charge la fonte Font Awesome
-bool DpIconManager::LoadIconFont() {
-    if (m_fontLoaded) {
-        return true;  // Déjà chargée
-    }
-    
+// Charge la fonte Font Awesome Free
+bool DpIconManager::LoadFreeFont() {
     if (!m_initialized || !m_callbacks.getDataPath) {
         wxLogWarning("DpIconManager not initialized properly");
         return false;
@@ -38,18 +35,82 @@ bool DpIconManager::LoadIconFont() {
     fn.SetFullName("Font Awesome 6 Free-Solid-900.otf");
     
     if (!wxFileExists(fn.GetFullPath())) {
-        wxLogWarning("Font Awesome file not found: %s", fn.GetFullPath());
+        wxLogWarning("Font Awesome Free file not found: %s", fn.GetFullPath());
         return false;
     }
     
     if (!wxFont::AddPrivateFont(fn.GetFullPath())) {
-        wxLogWarning("Unable to load Font Awesome: %s", fn.GetFullPath());
+        wxLogWarning("Unable to load Font Awesome Free: %s", fn.GetFullPath());
         return false;
     }
     
-    m_fontLoaded = true;
-    wxLogMessage("Font Awesome loaded successfully from: %s", fn.GetFullPath());
+    wxLogMessage("Font Awesome Free loaded successfully from: %s", fn.GetFullPath());
     return true;
+}
+
+// Charge la fonte Font Awesome Pro
+bool DpIconManager::LoadProFont() {
+    if (!m_initialized || !m_callbacks.getDataPath) {
+        return false;
+    }
+    
+    wxFileName fn;
+    fn.SetPath(m_callbacks.getDataPath());
+    fn.AppendDir("data");
+    fn.AppendDir("resources");
+    fn.SetFullName("Font Awesome 6 Pro-Solid-900.otf");
+    
+    if (!wxFileExists(fn.GetFullPath())) {
+        wxLogDebug("Font Awesome Pro file not found: %s", fn.GetFullPath());
+        return false;
+    }
+    
+    if (!wxFont::AddPrivateFont(fn.GetFullPath())) {
+        wxLogDebug("Unable to load Font Awesome Pro: %s", fn.GetFullPath());
+        return false;
+    }
+    
+    m_proFontLoaded = true;
+    wxLogMessage("Font Awesome Pro loaded successfully from: %s", fn.GetFullPath());
+    return true;
+}
+
+// Charge les fontes Font Awesome
+bool DpIconManager::LoadIconFont() {
+    if (m_fontLoaded) {
+        return true;  // Déjà chargée
+    }
+    
+    // Essaie d'abord de charger Font Awesome Pro
+    if (LoadProFont()) {
+        m_fontLoaded = true;
+        // Si on a réussi à charger Pro et que c'est le type courant, on garde Pro
+        if (m_currentFontType == DpFontAwesomeType::Pro) {
+            return true;
+        }
+    }
+    
+    // Charge toujours Font Awesome Free (fallback ou choix explicite)
+    if (LoadFreeFont()) {
+        m_fontLoaded = true;
+        // Si on n'a pas pu charger Pro, force Free
+        if (!m_proFontLoaded) {
+            m_currentFontType = DpFontAwesomeType::Free;
+        }
+        return true;
+    }
+    
+    return false;
+}
+
+// Définit le type de fonte à utiliser
+void DpIconManager::SetFontType(DpFontAwesomeType type) {
+    if (type == DpFontAwesomeType::Pro && !m_proFontLoaded) {
+        wxLogWarning("Font Awesome Pro not available, falling back to Free");
+        m_currentFontType = DpFontAwesomeType::Free;
+    } else {
+        m_currentFontType = type;
+    }
 }
 
 // Création d'une police avec mise à l'échelle DPI
@@ -57,9 +118,14 @@ wxFont DpIconManager::CreateScaledIconFont(int pointSize, wxWindow* parent) cons
     // S'assurer que la fonte est chargée
     const_cast<DpIconManager*>(this)->LoadIconFont();
     
+    // Sélectionne le nom de famille en fonction du type actuel
+    wxString familyName = (m_currentFontType == DpFontAwesomeType::Pro && m_proFontLoaded) 
+                          ? kFaProFamilyName 
+                          : kFaFamilyName;
+    
     wxFontInfo info(pointSize);
     info.Family(wxFONTFAMILY_DEFAULT)
-        .FaceName(kFaFamilyName)
+        .FaceName(familyName)
         .Weight(wxFONTWEIGHT_NORMAL)
         .Style(wxFONTSTYLE_NORMAL)
         .AntiAliased(true);
