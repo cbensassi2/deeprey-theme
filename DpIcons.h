@@ -69,6 +69,21 @@ enum class DpIcon {
     Link,              // Lien/Connexion
     Sun,               // Soleil (mode jour)
     Moon,              // Lune (mode nuit)
+    
+    // Nouvelles icônes Pro
+    LocationXmark,     // location-xmark (alternative à Mark)
+    XmarkLarge,        // xmark-large (alternative à Close)
+    GaugeLow,          // gauge-low (alternative à NavBar)
+    SidebarFlip,       // sidebar-flip (menu latéral)
+    GridHorizontal,    // grid-horizontal (menu accueil)
+    TableLayout,       // table-layout (combo alternatif)
+    SlidersUp,         // sliders-up (contrôle système)
+    RectanglesMixed,   // rectangles-mixed (combo 2)
+    PlusLarge,         // plus-large (bouton plus)
+    ListTimeline,      // list-timeline (panneau)
+    HouseDay,          // house-day (contrôle système 2)
+    BrightnessLow,     // brightness-low (luminosité faible)
+    BrightnessHigh,    // brightness (luminosité haute)
 };
 
 /**

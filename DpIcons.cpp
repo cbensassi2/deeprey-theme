@@ -215,6 +215,21 @@ std::map<DpIcon, wxString> DpIconManager::GetIconMap() {
         {DpIcon::Link,              wxString::FromUTF8(u8"\uf0c1")},  // link
         {DpIcon::Sun,               wxString::FromUTF8(u8"\uf185")},  // sun
         {DpIcon::Moon,              wxString::FromUTF8(u8"\uf186")},  // moon
+        
+        // Nouvelles icônes Pro
+        {DpIcon::LocationXmark,     wxString::FromUTF8(u8"\uf60e")},  // location-xmark
+        {DpIcon::XmarkLarge,        wxString::FromUTF8(u8"\ue59b")},  // xmark-large
+        {DpIcon::GaugeLow,          wxString::FromUTF8(u8"\uf627")},  // gauge-low
+        {DpIcon::SidebarFlip,       wxString::FromUTF8(u8"\ue24f")},  // sidebar-flip
+        {DpIcon::GridHorizontal,    wxString::FromUTF8(u8"\ue307")},  // grid-horizontal
+        {DpIcon::TableLayout,       wxString::FromUTF8(u8"\ue290")},  // table-layout
+        {DpIcon::SlidersUp,         wxString::FromUTF8(u8"\uf3f1")},  // sliders-up
+        {DpIcon::RectanglesMixed,   wxString::FromUTF8(u8"\ue323")},  // rectangles-mixed
+        {DpIcon::PlusLarge,         wxString::FromUTF8(u8"\ue59e")},  // plus-large
+        {DpIcon::ListTimeline,      wxString::FromUTF8(u8"\ue1d1")},  // list-timeline
+        {DpIcon::HouseDay,          wxString::FromUTF8(u8"\ue00e")},  // house-day
+        {DpIcon::BrightnessLow,     wxString::FromUTF8(u8"\ue0ca")},  // brightness-low
+        {DpIcon::BrightnessHigh,    wxString::FromUTF8(u8"\ue0c9")},  // brightness
     };
     return iconMap;
 }
@@ -261,6 +276,19 @@ std::map<DpIcon, wxString> DpIconManager::GetNameMap() {
         {DpIcon::Link,              "Link"},
         {DpIcon::Sun,               "Sun"},
         {DpIcon::Moon,              "Moon"},
+        {DpIcon::LocationXmark,     "Location X-Mark"},
+        {DpIcon::XmarkLarge,        "X-Mark Large"},
+        {DpIcon::GaugeLow,          "Gauge Low"},
+        {DpIcon::SidebarFlip,       "Sidebar Flip"},
+        {DpIcon::GridHorizontal,    "Grid Horizontal"},
+        {DpIcon::TableLayout,       "Table Layout"},
+        {DpIcon::SlidersUp,         "Sliders Up"},
+        {DpIcon::RectanglesMixed,   "Rectangles Mixed"},
+        {DpIcon::PlusLarge,         "Plus Large"},
+        {DpIcon::ListTimeline,      "List Timeline"},
+        {DpIcon::HouseDay,          "House Day"},
+        {DpIcon::BrightnessLow,     "Brightness Low"},
+        {DpIcon::BrightnessHigh,    "Brightness High"},
     };
     return nameMap;
 }
