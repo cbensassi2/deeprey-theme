@@ -1,0 +1,198 @@
+#include "DpIcons.h"
+#include <wx/font.h>
+#include <wx/log.h>
+#include <wx/filefn.h>
+
+// Définition du nom de la famille Font Awesome
+const wxString DpIconManager::kFaFamilyName = "Font Awesome 6 Free Solid";
+
+// Singleton
+DpIconManager& DpIconManager::Instance() {
+    static DpIconManager instance;
+    return instance;
+}
+
+// Initialisation
+void DpIconManager::Init(const DpIconCallbacks& callbacks) {
+    m_callbacks = callbacks;
+    m_initialized = true;
+}
+
+// Charge la fonte Font Awesome
+bool DpIconManager::LoadIconFont() {
+    if (m_fontLoaded) {
+        return true;  // Déjà chargée
+    }
+    
+    if (!m_initialized || !m_callbacks.getDataPath) {
+        wxLogWarning("DpIconManager not initialized properly");
+        return false;
+    }
+    
+    wxFileName fn;
+    fn.SetPath(m_callbacks.getDataPath());
+    fn.AppendDir("data");
+    fn.AppendDir("resources");
+    fn.SetFullName("Font Awesome 6 Free-Solid-900.otf");
+    
+    if (!wxFileExists(fn.GetFullPath())) {
+        wxLogWarning("Font Awesome file not found: %s", fn.GetFullPath());
+        return false;
+    }
+    
+    if (!wxFont::AddPrivateFont(fn.GetFullPath())) {
+        wxLogWarning("Unable to load Font Awesome: %s", fn.GetFullPath());
+        return false;
+    }
+    
+    m_fontLoaded = true;
+    wxLogMessage("Font Awesome loaded successfully from: %s", fn.GetFullPath());
+    return true;
+}
+
+// Création d'une police avec mise à l'échelle DPI
+wxFont DpIconManager::CreateScaledIconFont(int pointSize, wxWindow* parent) const {
+    // S'assurer que la fonte est chargée
+    const_cast<DpIconManager*>(this)->LoadIconFont();
+    
+    wxFontInfo info(pointSize);
+    info.Family(wxFONTFAMILY_DEFAULT)
+        .FaceName(kFaFamilyName)
+        .Weight(wxFONTWEIGHT_NORMAL)
+        .Style(wxFONTSTYLE_NORMAL)
+        .AntiAliased(true);
+    
+    wxFont font(info);
+    
+    // Application du facteur DPI si un parent est fourni
+    if (parent) {
+        font = font.Scaled(parent->GetDPIScaleFactor());
+    }
+    
+    return font;
+}
+
+// API publique
+wxFont DpIconManager::GetIconFont(int pointSize, wxWindow* parent) const {
+    return CreateScaledIconFont(pointSize, parent);
+}
+
+wxString DpIconManager::GetIconGlyph(DpIcon icon) const {
+    auto& iconMap = GetIconMap();
+    auto it = iconMap.find(icon);
+    if (it != iconMap.end()) {
+        return it->second;
+    }
+    // Retourne une icône par défaut (point d'interrogation)
+    return wxString::FromUTF8(u8"\uf128");
+}
+
+wxString DpIconManager::GetIconName(DpIcon icon) const {
+    auto& nameMap = GetNameMap();
+    auto it = nameMap.find(icon);
+    if (it != nameMap.end()) {
+        return it->second;
+    }
+    return "Unknown";
+}
+
+// Map statique des glyphes
+std::map<DpIcon, wxString> DpIconManager::GetIconMap() {
+    static std::map<DpIcon, wxString> iconMap = {
+        // Icônes de navigation et UI
+        {DpIcon::Mark,              wxString::FromUTF8(u8"\uf3c5")},  // location-dot
+        {DpIcon::NavBar,            wxString::FromUTF8(u8"\uf0c9")},  // bars
+        {DpIcon::DayNight,          wxString::FromUTF8(u8"\uf185")},  // sun
+        {DpIcon::Views,             wxString::FromUTF8(u8"\uf06e")},  // eye
+        {DpIcon::ComboViews,        wxString::FromUTF8(u8"\uf5fd")},  // layer-group
+        {DpIcon::Settings,          wxString::FromUTF8(u8"\uf013")},  // gear
+        {DpIcon::LegacySettings,    wxString::FromUTF8(u8"\uf0a0")},  // sliders-h
+        {DpIcon::RoutesWaypoints,   wxString::FromUTF8(u8"\uf4d7")},  // route
+        
+        // Icônes de contrôle
+        {DpIcon::Close,             wxString::FromUTF8(u8"\uf00d")},  // xmark
+        {DpIcon::Plus,              wxString::FromUTF8(u8"\uf067")},  // plus
+        {DpIcon::Minus,             wxString::FromUTF8(u8"\uf068")},  // minus
+        {DpIcon::ChevronUp,         wxString::FromUTF8(u8"\uf077")},  // chevron-up
+        {DpIcon::ChevronDown,       wxString::FromUTF8(u8"\uf078")},  // chevron-down
+        {DpIcon::ChevronLeft,       wxString::FromUTF8(u8"\uf053")},  // chevron-left
+        {DpIcon::ChevronRight,      wxString::FromUTF8(u8"\uf054")},  // chevron-right
+        
+        // Icônes d'état
+        {DpIcon::Check,             wxString::FromUTF8(u8"\uf00c")},  // check
+        {DpIcon::Warning,           wxString::FromUTF8(u8"\uf071")},  // triangle-exclamation
+        {DpIcon::Info,              wxString::FromUTF8(u8"\uf05a")},  // circle-info
+        {DpIcon::Error,             wxString::FromUTF8(u8"\uf057")},  // circle-xmark
+        {DpIcon::Circle,            wxString::FromUTF8(u8"\uf111")},  // circle (cercle plein)
+        
+        // Icônes diverses
+        {DpIcon::Search,            wxString::FromUTF8(u8"\uf002")},  // magnifying-glass
+        {DpIcon::Filter,            wxString::FromUTF8(u8"\uf0b0")},  // filter
+        {DpIcon::Sort,              wxString::FromUTF8(u8"\uf0dc")},  // sort
+        {DpIcon::Refresh,           wxString::FromUTF8(u8"\uf021")},  // arrows-rotate
+        {DpIcon::Save,              wxString::FromUTF8(u8"\uf0c7")},  // floppy-disk
+        {DpIcon::Open,              wxString::FromUTF8(u8"\uf07c")},  // folder-open
+        {DpIcon::Delete,            wxString::FromUTF8(u8"\uf2ed")},  // trash-can
+        {DpIcon::Edit,              wxString::FromUTF8(u8"\uf044")},  // pen-to-square
+        {DpIcon::Copy,              wxString::FromUTF8(u8"\uf0c5")},  // copy
+        {DpIcon::Paste,             wxString::FromUTF8(u8"\uf0ea")},  // clipboard
+        
+        // Icônes système
+        {DpIcon::PowerOff,          wxString::FromUTF8(u8"\uf011")},  // power-off
+        {DpIcon::Sleep,             wxString::FromUTF8(u8"\uf186")},  // moon
+        {DpIcon::Screenshot,        wxString::FromUTF8(u8"\uf030")},  // camera
+        {DpIcon::TouchLock,         wxString::FromUTF8(u8"\uf256")},  // hand
+        {DpIcon::Brightness,        wxString::FromUTF8(u8"\uf185")},  // sun
+        {DpIcon::Wifi,              wxString::FromUTF8(u8"\uf1eb")},  // wifi
+        {DpIcon::Link,              wxString::FromUTF8(u8"\uf0c1")},  // link
+        {DpIcon::Sun,               wxString::FromUTF8(u8"\uf185")},  // sun
+        {DpIcon::Moon,              wxString::FromUTF8(u8"\uf186")},  // moon
+    };
+    return iconMap;
+}
+
+// Map statique des noms
+std::map<DpIcon, wxString> DpIconManager::GetNameMap() {
+    static std::map<DpIcon, wxString> nameMap = {
+        {DpIcon::Mark,              "Mark"},
+        {DpIcon::NavBar,            "NavBar"},
+        {DpIcon::DayNight,          "Day/Night"},
+        {DpIcon::Views,             "Views"},
+        {DpIcon::ComboViews,        "Combo Views"},
+        {DpIcon::Settings,          "Settings"},
+        {DpIcon::LegacySettings,    "Legacy Settings"},
+        {DpIcon::RoutesWaypoints,   "Routes & Waypoints"},
+        {DpIcon::Close,             "Close"},
+        {DpIcon::Plus,              "Plus"},
+        {DpIcon::Minus,             "Minus"},
+        {DpIcon::ChevronUp,         "Chevron Up"},
+        {DpIcon::ChevronDown,       "Chevron Down"},
+        {DpIcon::ChevronLeft,       "Chevron Left"},
+        {DpIcon::ChevronRight,      "Chevron Right"},
+        {DpIcon::Check,             "Check"},
+        {DpIcon::Warning,           "Warning"},
+        {DpIcon::Info,              "Info"},
+        {DpIcon::Error,             "Error"},
+        {DpIcon::Circle,            "Circle"},
+        {DpIcon::Search,            "Search"},
+        {DpIcon::Filter,            "Filter"},
+        {DpIcon::Sort,              "Sort"},
+        {DpIcon::Refresh,           "Refresh"},
+        {DpIcon::Save,              "Save"},
+        {DpIcon::Open,              "Open"},
+        {DpIcon::Delete,            "Delete"},
+        {DpIcon::Edit,              "Edit"},
+        {DpIcon::Copy,              "Copy"},
+        {DpIcon::Paste,             "Paste"},
+        {DpIcon::PowerOff,          "Power Off"},
+        {DpIcon::Sleep,             "Sleep"},
+        {DpIcon::Screenshot,        "Screenshot"},
+        {DpIcon::TouchLock,         "Touch Lock"},
+        {DpIcon::Brightness,        "Brightness"},
+        {DpIcon::Wifi,              "Wifi"},
+        {DpIcon::Link,              "Link"},
+        {DpIcon::Sun,               "Sun"},
+        {DpIcon::Moon,              "Moon"},
+    };
+    return nameMap;
+}
