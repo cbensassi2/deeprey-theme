@@ -231,6 +231,7 @@ std::map<DpIcon, wxString> DpIconManager::GetIconMap() {
         {DpIcon::BrightnessLow,     wxString::FromUTF8(u8"\ue0ca")},  // brightness-low
         {DpIcon::BrightnessHigh,    wxString::FromUTF8(u8"\ue0c9")},  // brightness
 		{DpIcon::RectangleWide,     wxString::FromUTF8(u8"\uf2fc")},  // rectangle-wide
+		{DpIcon::Square,            wxString::FromUTF8(u8"\uf0c8")},  // Square
     };
     return iconMap;
 }
@@ -291,6 +292,7 @@ std::map<DpIcon, wxString> DpIconManager::GetNameMap() {
         {DpIcon::BrightnessLow,     "Brightness Low"},
         {DpIcon::BrightnessHigh,    "Brightness High"},
 		{DpIcon::RectangleWide,     "Rectangle Wide"},
+		{DpIcon::square,    		"Square"},
 		
     };
     return nameMap;

@@ -85,6 +85,7 @@ enum class DpIcon {
     BrightnessLow,     // brightness-low (luminosité faible)
     BrightnessHigh,    // brightness (luminosité haute)
 	RectangleWide,     // rectangle-wide
+	Square,     		// rectangle-wide
 };
 
 /**
