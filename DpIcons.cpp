@@ -1,7 +1,9 @@
 #include "DpIcons.h"
+#include <wx/window.h>  // Pour wxWindow
 #include <wx/font.h>
 #include <wx/log.h>
 #include <wx/filefn.h>
+#include <wx/filename.h>
 
 // Définition du nom de la famille Font Awesome
 const wxString DpIconManager::kFaFamilyName = "Font Awesome 6 Free Solid";
